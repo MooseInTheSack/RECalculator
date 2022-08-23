@@ -1,4 +1,4 @@
-/* eslint-disable no-eval */
+/* eslint-disable */
 import * as React from "react";
 import "./Calculator.css";
 import Box from "@mui/material/Box";
