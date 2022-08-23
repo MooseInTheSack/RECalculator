@@ -1,9 +1,6 @@
+/* eslint-disable no-eval */
 import * as React from "react";
 import NumberFormat from "react-number-format";
-
-import { getTotalCapitalExpenditures } from "../../utils/capex";
-import { currencyFormat } from "../../utils/currencyFormat";
-import { getTotals } from "../../utils/getTotals";
 
 export default function CapitalExpenditures(props) {
   const [cocroiValue, setCocroiValue] = React.useState(0);

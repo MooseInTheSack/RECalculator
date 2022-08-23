@@ -1,12 +1,10 @@
+/* eslint-disable no-eval */
 import * as React from "react";
 import "./Calculator.css";
 import Box from "@mui/material/Box";
-import FilledInput from "@mui/material/FilledInput";
 import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import Grid from "@mui/material/Grid";
 
 import {
@@ -46,7 +44,6 @@ export default function Calculator() {
   const [allExpenses, setAllExpenses] = React.useState("NA");
 
   const handleChange = (event) => {
-    const valueToCheck = event.target.value;
     if (event.target.id === "price") {
       setPrice(event.target.value);
     } else if (event.target.id === "downpaymentpercent") {
@@ -90,14 +87,7 @@ export default function Calculator() {
 
       const estPropTaxes = findEstimatedPropertyTaxes(parseFloat(price));
       const estInsurance = findEstimatedHouseInsurance(parseFloat(price));
-      /*
-      console.log("totalCapEx: ", totalCapEx);
-      console.log("estInsurance: ", estInsurance);
-      console.log("totalOp: ", totalOp);
-      console.log("estPropTaxes: ", estPropTaxes);
-      console.log("estInsurance: ", estInsurance);
-      console.log("yeet: ", yeet);
-*/
+
       const totalExpensesToSet =
         yeet + totalCapEx + totalOp + estPropTaxes + estInsurance;
       setAllExpenses(totalExpensesToSet);
