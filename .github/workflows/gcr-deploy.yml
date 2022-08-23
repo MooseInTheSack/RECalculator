@@ -3,7 +3,7 @@ name: Google Cloud Run Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   PROJECT_ID: ${{ secrets.GCR_PROJECT }}
@@ -17,15 +17,15 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@master
+        uses: actions/checkout@main
 
       - name: Setup Node.js (NPM)
-        uses: actions/setup-node@master
+        uses: actions/setup-node@main
         with:
           node-version: "12.x"
 
       - name: Use cached node_modules
-        uses: actions/cache@master
+        uses: actions/cache@main
         with:
           path: node_modules
           key: nodeModules-${{ hashFiles('**/yarn.lock') }}
