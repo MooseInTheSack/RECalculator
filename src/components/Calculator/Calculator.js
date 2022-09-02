@@ -106,6 +106,9 @@ export default function Calculator() {
       parseFloat(downpaymentpercent) <= 100
     ) {
       const downpaymentPercentFloat = parseFloat(downpaymentpercent) * 0.01;
+      console.log('=====')
+      console.log('downpaymentpercent of ', downpaymentpercent)
+      console.log(' becomes downpaymentPercentFloat ', downpaymentPercentFloat)
       const downPaymentTotal = downpaymentPercentFloat * parseFloat(price);
       setDownPayment(downPaymentTotal);
 
@@ -142,8 +145,11 @@ export default function Calculator() {
 
       const parsedImmediateRepairs = immediateRepairs !== "" && immediateRepairs !== undefined && !isNaN(immediateRepairs) ? parseFloat(immediateRepairs) : 0;
 
-      const yeet = closingCostPercent * price * 0.01;
-      setDayOneCosts(parsedImmediateRepairs + downpayment + yeet);
+      const closingCosts = closingCostPercent * price * 0.01;
+      console.log('parsedImmediateRepairs: ', parsedImmediateRepairs)
+      console.log('downPaymentTotal: ', downPaymentTotal)
+      console.log('parsedImmediateRepairs: ', parsedImmediateRepairs)
+      setDayOneCosts(parsedImmediateRepairs + downPaymentTotal + closingCosts);
 
       
     } else {
@@ -219,27 +225,31 @@ export default function Calculator() {
 
       <Grid container spacing={0}>
         <Grid item xs={6} md={3}>
+          <div className="section">
+            <h2>Day One Costs</h2>
+            <h5>Down Payment</h5>
+            <p>{currencyFormat(downpayment)}</p>
+
+            <h5>Closing Costs</h5>
+            <p>{currencyFormat(closingCostPercent * price * 0.01)}</p>
+
+            <FormControl variant="standard">
+              <TextField 
+                label="Immediate Repairs" 
+                variant="filled" 
+                id="immediateRepairs"
+                value={immediateRepairs}
+                onChange={handleChange} 
+              />
+            </FormControl>
+
+            <h5>Day One Costs:</h5>
+            <p>
+              {currencyFormat(dayOneCosts)}
+            </p>
+          </div>
+          <div className="section">
           <h2>Mortgage Expenses</h2>
-          <h5>Down Payment</h5>
-          <p>{currencyFormat(downpayment)}</p>
-
-          <h5>Closing Costs</h5>
-          <p>{currencyFormat(closingCostPercent * price * 0.01)}</p>
-
-          <FormControl variant="standard">
-            <TextField 
-              label="Immediate Repairs" 
-              variant="filled" 
-              id="immediateRepairs"
-              value={immediateRepairs}
-              onChange={handleChange} 
-            />
-          </FormControl>
-
-          <h5>Day One Costs:</h5>
-          <p>
-            {currencyFormat(dayOneCosts)}
-          </p>
 
           <FormControl variant="standard">
             <TextField 
@@ -280,55 +290,59 @@ export default function Calculator() {
                 estimatedPMI
             )}
           </p>
+          </div>
         </Grid>
         <Grid item xs={6} md={3}>
-          <br />
-          <CapitalExpenditures price={price} />
+          <div className="section">
+            <CapitalExpenditures price={price} />
+            <br />
+          </div>
         </Grid>
         <Grid item xs={6} md={3}>
-          <br />
-          <h2>Monthly Operating Expenses</h2>
-          <FormControl variant="standard">
-            <TextField 
-              label="Monthly Insurance Costs" 
-              variant="filled" 
-              id="monthlyInsurance"
-              value={monthlyInsurance}
-              onChange={handleChange} 
-            />
-          </FormControl>
-          <FormControl variant="standard">
-            <TextField 
-              label="Monthly Property Management" 
-              variant="filled" 
-              id="monthlyPropertyManagement"
-              value={monthlyPropertyManagement}
-              onChange={handleChange} 
-            />
-          </FormControl>
-          <FormControl variant="standard">
-            <TextField 
-              label="Monthly Vacancy" 
-              variant="filled" 
-              id="monthlyVacancy"
-              value={monthlyVacancy}
-              onChange={handleChange} 
-            />
-          </FormControl>
-          <FormControl variant="standard">
-            <TextField 
-              label="Monthly Repairs" 
-              variant="filled" 
-              id="monthlyRepairs"
-              value={monthlyRepairs}
-              onChange={handleChange} 
-            />
-          </FormControl>
-          <h5>Total Operating Expenses:</h5>
-          <p>{currencyFormat(totalOperatingExpenses)}</p>
-
+          <div className="section">
+            <h2>Monthly Operating Expenses</h2>
+            <FormControl variant="standard">
+              <TextField 
+                label="Monthly Insurance Costs" 
+                variant="filled" 
+                id="monthlyInsurance"
+                value={monthlyInsurance}
+                onChange={handleChange} 
+              />
+            </FormControl>
+            <FormControl variant="standard">
+              <TextField 
+                label="Monthly Property Management" 
+                variant="filled" 
+                id="monthlyPropertyManagement"
+                value={monthlyPropertyManagement}
+                onChange={handleChange} 
+              />
+            </FormControl>
+            <FormControl variant="standard">
+              <TextField 
+                label="Monthly Vacancy" 
+                variant="filled" 
+                id="monthlyVacancy"
+                value={monthlyVacancy}
+                onChange={handleChange} 
+              />
+            </FormControl>
+            <FormControl variant="standard">
+              <TextField 
+                label="Monthly Repairs" 
+                variant="filled" 
+                id="monthlyRepairs"
+                value={monthlyRepairs}
+                onChange={handleChange} 
+              />
+            </FormControl>
+            <h5>Total Operating Expenses:</h5>
+            <p>{currencyFormat(totalOperatingExpenses)}</p>
+          </div>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={12} md={3}>
+        <div className="section">
           <h2>ALL EXPENSES:</h2>
           <p>{currencyFormat(allExpenses)}</p>
 
@@ -338,13 +352,13 @@ export default function Calculator() {
           <h2>Cash Flow:</h2>
           <p>{currencyFormat(rent - allExpenses)}</p>
 
-          <h2>CoCroi:</h2>
           <Cocroi
             cashFlow={rent - allExpenses}
             downPayment={downpayment}
             closingCosts={closingCostPercent * price * 0.01}
             immediateRepairs={immediateRepairs}
           />
+        </div>
         </Grid>
       </Grid>
     </Box>
