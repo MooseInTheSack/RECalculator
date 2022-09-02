@@ -11,7 +11,6 @@ import TextField from '@mui/material/TextField';
 import {
   getMortgagePayment,
   findEstimatedPropertyTaxes,
-  findEstimatedHouseInsurance,
   findEstimatedPMI,
 } from "../../utils/mortgage";
 import { currencyFormat } from "../../utils/currencyFormat";
@@ -20,7 +19,6 @@ import { getEstimatedAnnualOperatingExpenses } from "../../utils/operating";
 import { getTotals } from "../../utils/getTotals";
 
 import CapitalExpenditures from "../CapitalExpenditures/CapitalExpenditures";
-import Operating from "../Operating/Operating";
 import Cocroi from "../Cocroi/Cocroi";
 
 const findInitialPMI = (downpaymentpercent, price) => {
@@ -34,6 +32,11 @@ const findInitialPMI = (downpaymentpercent, price) => {
   } else {
     return 0.0;
   }
+}
+
+const convertToFloat = (input) => {
+  const result = input !== "" && input !== undefined && !isNaN(input) ? parseFloat(input) : 0;
+  return result;
 }
 
 export default function Calculator() {  
@@ -53,6 +56,13 @@ export default function Calculator() {
     setEstimatedHousingInsurance,
   ] = React.useState(200);
   const [estimatedPMI, setEstimatedPMI] = React.useState(findInitialPMI(downpaymentpercent, price));
+  
+  //operating:
+  const [monthlyInsurance, setMonthlyInsurance] = React.useState(100);
+  const [monthlyPropertyManagement, setMonthlyPropertyManagement] = React.useState(rent*0.1);
+  const [monthlyVacancy, setMonthlyVacancy] = React.useState(100);
+  const [monthlyRepairs, setMonthlyRepairs] = React.useState(100);
+  const [totalOperatingExpenses, setTotalOperatingExpenses] = React.useState(monthlyInsurance+monthlyRepairs+monthlyPropertyManagement+monthlyVacancy)
 
   const [dayOneCosts, setDayOneCosts] = React.useState(0);
   const [allExpenses, setAllExpenses] = React.useState("NA");
@@ -76,8 +86,16 @@ export default function Calculator() {
       setEstimatedHousingInsurance(event.target.value)
     } else if (event.target.id === "estimatedPMI") {
       setEstimatedPMI(event.target.value)
-    } else if ( event.target.id === "immediateRepairs") {
+    } else if (event.target.id === "immediateRepairs") {
       setImmediateRepairs(event.target.value)
+    } else if (event.target.id === "monthlyInsurance") {
+      setMonthlyInsurance(event.target.value)
+    } else if (event.target.id === "monthlyPropertyManagement") {
+      setMonthlyPropertyManagement(event.target.value)
+    } else if (event.target.id === "monthlyVacancy") {
+      setMonthlyVacancy(event.target.value)
+    } else if (event.target.id === "monthlyRepairs") {
+      setMonthlyRepairs(event.target.value)
     }
   };
 
@@ -108,7 +126,9 @@ export default function Calculator() {
         parseFloat(rent)
       );
       const totalCapEx = getTotals(boof) / 12;
-      const totalOp = getTotals(beef) / 12;
+      //const totalOp = getTotals(beef) / 12;
+      const totalOp = convertToFloat(monthlyInsurance) + convertToFloat(monthlyPropertyManagement) + convertToFloat(monthlyVacancy) + convertToFloat(monthlyRepairs);
+      setTotalOperatingExpenses(totalOp)
 
       //const estPropTaxes = findEstimatedPropertyTaxes(parseFloat(price));
       const parsedPropTaxes = estimatedPropertyTaxes !== "" && estimatedPropertyTaxes !== undefined && !isNaN(estimatedPropertyTaxes) ? parseFloat(estimatedPropertyTaxes) : 0;
@@ -137,7 +157,11 @@ export default function Calculator() {
     estimatedPropertyTaxes, 
     estimatedHousingInsurance,
     estimatedPMI,
-    immediateRepairs
+    immediateRepairs,
+    monthlyInsurance,
+    monthlyPropertyManagement,
+    monthlyVacancy,
+    monthlyRepairs
   ]);
 
   return (
@@ -263,7 +287,46 @@ export default function Calculator() {
         </Grid>
         <Grid item xs={6} md={3}>
           <br />
-          <Operating price={price} rent={rent} />
+          <h2>Monthly Operating Expenses</h2>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Insurance Costs" 
+              variant="filled" 
+              id="monthlyInsurance"
+              value={monthlyInsurance}
+              onChange={handleChange} 
+            />
+          </FormControl>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Property Management" 
+              variant="filled" 
+              id="monthlyPropertyManagement"
+              value={monthlyPropertyManagement}
+              onChange={handleChange} 
+            />
+          </FormControl>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Vacancy" 
+              variant="filled" 
+              id="monthlyVacancy"
+              value={monthlyVacancy}
+              onChange={handleChange} 
+            />
+          </FormControl>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Repairs" 
+              variant="filled" 
+              id="monthlyRepairs"
+              value={monthlyRepairs}
+              onChange={handleChange} 
+            />
+          </FormControl>
+          <h5>Total Operating Expenses:</h5>
+          <p>{currencyFormat(totalOperatingExpenses)}</p>
+
         </Grid>
         <Grid item xs={6} md={3}>
           <h2>ALL EXPENSES:</h2>
