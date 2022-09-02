@@ -54,14 +54,14 @@ export default function Calculator() {
   const [
     estimatedHousingInsurance,
     setEstimatedHousingInsurance,
-  ] = React.useState(200);
+  ] = React.useState(55);
   const [estimatedPMI, setEstimatedPMI] = React.useState(findInitialPMI(downpaymentpercent, price));
   
   //operating:
-  const [monthlyInsurance, setMonthlyInsurance] = React.useState(100);
+  const [monthlyInsurance, setMonthlyInsurance] = React.useState(55);
   const [monthlyPropertyManagement, setMonthlyPropertyManagement] = React.useState(rent*0.1);
-  const [monthlyVacancy, setMonthlyVacancy] = React.useState(100);
-  const [monthlyRepairs, setMonthlyRepairs] = React.useState(100);
+  const [monthlyVacancy, setMonthlyVacancy] = React.useState(rent*0.05);
+  const [monthlyRepairs, setMonthlyRepairs] = React.useState(50);
   const [totalOperatingExpenses, setTotalOperatingExpenses] = React.useState(monthlyInsurance+monthlyRepairs+monthlyPropertyManagement+monthlyVacancy)
 
   const [dayOneCosts, setDayOneCosts] = React.useState(0);
