@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
 import Grid from "@mui/material/Grid";
+import TextField from '@mui/material/TextField';
 
 import {
   getMortgagePayment,
@@ -22,25 +23,38 @@ import CapitalExpenditures from "../CapitalExpenditures/CapitalExpenditures";
 import Operating from "../Operating/Operating";
 import Cocroi from "../Cocroi/Cocroi";
 
-export default function Calculator() {
+const findInitialPMI = (downpaymentpercent, price) => {
+  if (
+    parseFloat(downpaymentpercent) >= 0.0 &&
+    parseFloat(downpaymentpercent) < 20.0
+  ) {
+    const principle = (price*(1-downpaymentpercent));
+
+    return findEstimatedPMI(principle);
+  } else {
+    return 0.0;
+  }
+}
+
+export default function Calculator() {  
   const [price, setPrice] = React.useState(200000);
   const [interest, setInterest] = React.useState(5);
   const [downpaymentpercent, setDownPaymentPercent] = React.useState(20);
   const [years, setYears] = React.useState(30);
-  const [downpayment, setDownPayment] = React.useState(80000);
+  const [downpayment, setDownPayment] = React.useState(40000);
   const [rent, setRent] = React.useState(1600);
   const [closingCostPercent, setClosingCostPercent] = React.useState(3);
+  const [immediateRepairs, setImmediateRepairs] = React.useState(2000);
 
   const [estimatedMortgage, setEstimatedMortgage] = React.useState("NA");
-  const [estimatedPropertyTaxes, setEstimatedPropertyTaxes] = React.useState(
-    "NA"
-  );
+  const [estimatedPropertyTaxes, setEstimatedPropertyTaxes] = React.useState(findEstimatedPropertyTaxes(parseFloat(price)));
   const [
     estimatedHousingInsurance,
     setEstimatedHousingInsurance,
-  ] = React.useState("NA");
-  const [estimatedPMI, setEstimatedPMI] = React.useState("NA");
+  ] = React.useState(200);
+  const [estimatedPMI, setEstimatedPMI] = React.useState(findInitialPMI(downpaymentpercent, price));
 
+  const [dayOneCosts, setDayOneCosts] = React.useState(0);
   const [allExpenses, setAllExpenses] = React.useState("NA");
 
   const handleChange = (event) => {
@@ -56,6 +70,14 @@ export default function Calculator() {
       setRent(event.target.value);
     } else if (event.target.id === "closingcostpercent") {
       setClosingCostPercent(event.target.value);
+    } else if (event.target.id === "propertytaxes") {
+      setEstimatedPropertyTaxes(event.target.value)
+    } else if (event.target.id === "estimatedHousingInsurance") {
+      setEstimatedHousingInsurance(event.target.value)
+    } else if (event.target.id === "estimatedPMI") {
+      setEstimatedPMI(event.target.value)
+    } else if ( event.target.id === "immediateRepairs") {
+      setImmediateRepairs(event.target.value)
     }
   };
 
@@ -72,9 +94,12 @@ export default function Calculator() {
       const principle = parseFloat(price) - downPaymentTotal;
       const interestFloat = parseFloat(interest) * 0.01;
       const numberOfYears = parseFloat(years);
-      const yeet = getMortgagePayment(principle, interestFloat, numberOfYears);
+      const principleAndInterest = getMortgagePayment(principle, interestFloat, numberOfYears);
 
-      setEstimatedMortgage(yeet);
+      console.log('estimatedPMI:' ,estimatedPMI)
+      const parsedPMI = estimatedPMI !== "" && estimatedPMI !== undefined && !isNaN(estimatedPMI) ? parseFloat(estimatedPMI) : 0;
+
+      setEstimatedMortgage(principleAndInterest+parsedPMI);
 
       //find TOTAL of all expenses:
       const boof = getTotalCapitalExpenditures();
@@ -85,36 +110,35 @@ export default function Calculator() {
       const totalCapEx = getTotals(boof) / 12;
       const totalOp = getTotals(beef) / 12;
 
-      const estPropTaxes = findEstimatedPropertyTaxes(parseFloat(price));
-      const estInsurance = findEstimatedHouseInsurance(parseFloat(price));
+      //const estPropTaxes = findEstimatedPropertyTaxes(parseFloat(price));
+      const parsedPropTaxes = estimatedPropertyTaxes !== "" && estimatedPropertyTaxes !== undefined && !isNaN(estimatedPropertyTaxes) ? parseFloat(estimatedPropertyTaxes) : 0;
+      
+      //const estInsurance = findEstimatedHouseInsurance(parseFloat(price));
+      const parsedInsurance = estimatedHousingInsurance !== "" && estimatedHousingInsurance !== undefined && !isNaN(estimatedHousingInsurance) ? parseFloat(estimatedHousingInsurance) : 0;
 
       const totalExpensesToSet =
-        yeet + totalCapEx + totalOp + estPropTaxes + estInsurance;
+        principleAndInterest + totalCapEx + totalOp + parsedPropTaxes + parsedInsurance + parsedPMI;
       setAllExpenses(totalExpensesToSet);
 
-      if (
-        parseFloat(downpaymentpercent) >= 0.0 &&
-        parseFloat(downpaymentpercent) < 20.0
-      ) {
-        const estPMI = findEstimatedPMI(principle);
-        setEstimatedPMI(estPMI);
-      } else {
-        const estPMI = 0.0;
-        setEstimatedPMI(estPMI);
-      }
+      const parsedImmediateRepairs = immediateRepairs !== "" && immediateRepairs !== undefined && !isNaN(immediateRepairs) ? parseFloat(immediateRepairs) : 0;
+
+      const yeet = closingCostPercent * price * 0.01;
+      setDayOneCosts(parsedImmediateRepairs + downpayment + yeet);
+
+      
     } else {
       setDownPayment(0.0);
       setEstimatedMortgage("NA");
     }
-  }, [price, downpaymentpercent, interest, years]);
-
-  React.useEffect(() => {
-    const estPropTaxes = findEstimatedPropertyTaxes(parseFloat(price));
-    setEstimatedPropertyTaxes(estPropTaxes);
-
-    const estInsurance = findEstimatedHouseInsurance(parseFloat(price));
-    setEstimatedHousingInsurance(estInsurance);
-  }, [estimatedMortgage]);
+  }, [
+    price, 
+    downpaymentpercent, 
+    interest, years, 
+    estimatedPropertyTaxes, 
+    estimatedHousingInsurance,
+    estimatedPMI,
+    immediateRepairs
+  ]);
 
   return (
     <Box
@@ -178,29 +202,52 @@ export default function Calculator() {
           <h5>Closing Costs</h5>
           <p>{currencyFormat(closingCostPercent * price * 0.01)}</p>
 
-          <h5>Immediate Repairs</h5>
-          <p>{currencyFormat(2000)}</p>
+          <FormControl variant="standard">
+            <TextField 
+              label="Immediate Repairs" 
+              variant="filled" 
+              id="immediateRepairs"
+              value={immediateRepairs}
+              onChange={handleChange} 
+            />
+          </FormControl>
 
           <h5>Day One Costs:</h5>
           <p>
-            {currencyFormat(
-              downpayment + closingCostPercent * price * 0.01 + 2000
-            )}
+            {currencyFormat(dayOneCosts)}
           </p>
 
-          <h5>Estimated Principle + Interest Payment:</h5>
-          <p>{currencyFormat(estimatedMortgage)}</p>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Property Taxes" 
+              variant="filled" 
+              id="propertytaxes"
+              value={estimatedPropertyTaxes}
+              onChange={handleChange} 
+            />
+          </FormControl>
 
-          <h5>Estimated Monthly Property Taxes:</h5>
-          <p>{currencyFormat(estimatedPropertyTaxes)}</p>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly Housing Insurance" 
+              variant="filled" 
+              id="estimatedHousingInsurance"
+              value={estimatedHousingInsurance}
+              onChange={handleChange} 
+            />
+          </FormControl>
 
-          <h5>Estimated Monthly Housing Insurance:</h5>
-          <p>{currencyFormat(estimatedHousingInsurance)}</p>
+          <FormControl variant="standard">
+            <TextField 
+              label="Monthly PMI" 
+              variant="filled" 
+              id="estimatedPMI"
+              value={estimatedPMI}
+              onChange={handleChange} 
+            />
+          </FormControl>
 
-          <h5>Estimated Monthly PMI</h5>
-          <p>{currencyFormat(estimatedPMI)}</p>
-
-          <h5>TOTAL:</h5>
+          <h5>Total Mortgage Expenses:</h5>
           <p>
             {currencyFormat(
               estimatedMortgage +
@@ -233,7 +280,7 @@ export default function Calculator() {
             cashFlow={rent - allExpenses}
             downPayment={downpayment}
             closingCosts={closingCostPercent * price * 0.01}
-            immediateRepairs={2000}
+            immediateRepairs={immediateRepairs}
           />
         </Grid>
       </Grid>

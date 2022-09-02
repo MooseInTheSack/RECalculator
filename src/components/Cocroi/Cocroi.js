@@ -14,7 +14,7 @@ export default function CapitalExpenditures(props) {
   }, [props.downpayment, props.cashFlow]);
   return (
     <div>
-      <h5>Cash-on-Cash Return on Investment:</h5>
+      <h5>Cash-on-Cash Return:</h5>
       <NumberFormat
         suffix={"%"}
         decimalScale={2}
