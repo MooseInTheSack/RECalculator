@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as React from "react";
+import React from "react";
 import "./Calculator.css";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
@@ -7,6 +7,8 @@ import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
 import Grid from "@mui/material/Grid";
 import TextField from '@mui/material/TextField';
+
+import ReactToPrint from 'react-to-print';
 
 import {
   getMortgagePayment,
@@ -39,7 +41,7 @@ const convertToFloat = (input) => {
   return result;
 }
 
-export default function Calculator() {  
+export const Calculator = React.forwardRef ((props, ref) => {
   const [price, setPrice] = React.useState(200000);
   const [interest, setInterest] = React.useState(5);
   const [downpaymentpercent, setDownPaymentPercent] = React.useState(20);
@@ -177,6 +179,7 @@ export default function Calculator() {
       }}
       noValidate
       autoComplete="off"
+      ref={ref}
     >
       <h2>Inputs</h2>
       <FormControl variant="standard">
@@ -361,4 +364,4 @@ export default function Calculator() {
       </Grid>
     </Box>
   );
-}
+});
