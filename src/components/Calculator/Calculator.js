@@ -106,9 +106,7 @@ export default function Calculator() {
       parseFloat(downpaymentpercent) <= 100
     ) {
       const downpaymentPercentFloat = parseFloat(downpaymentpercent) * 0.01;
-      console.log('=====')
-      console.log('downpaymentpercent of ', downpaymentpercent)
-      console.log(' becomes downpaymentPercentFloat ', downpaymentPercentFloat)
+
       const downPaymentTotal = downpaymentPercentFloat * parseFloat(price);
       setDownPayment(downPaymentTotal);
 
